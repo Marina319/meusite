@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man Simples</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+        }
+
+        canvas {
+            background-color: #000;
+            display: block;
+            border: 2px solid white;
+        }
+
+        .controls {
+            margin-top: 10px;
+        }
+
+        .controls button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pac-Man Simples</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <div class="controls">
+        <div class="grid">
+            <button onclick="moveUp()">▲</button>
+            <button onclick="moveLeft()">◀</button>
+            <button onclick="moveRight()">▶</button>
+            <button onclick="moveDown()">▼</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const tileSize = 20;
+        const numTiles = canvas.width / tileSize;
+
+        let pacman = {
+            x: 9,
+            y: 9,
+            dx: 0,
+            dy: 0
+        };
+
+        const map = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1],
+            [1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+            [1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1],
+            [1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        function drawMap() {
+            for (let row = 0; row < map.length; row++) {
+                for (let col = 0; col < map[row].length; col++) {
+                    if (map[row][col] === 1) {
+                        ctx.fillStyle = 'blue';
+                        ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+                    } else {
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+                    }
+                }
+            }
+        }
+
+        function drawPacman() {
+            ctx.beginPath();
+            ctx.arc(pacman.x * tileSize + tileSize / 2, pacman.y * tileSize + tileSize / 2, tileSize / 2, 0.2 * Math.PI, 1.8 * Math.PI);
+            ctx.lineTo(pacman.x * tileSize + tileSize / 2, pacman.y * tileSize + tileSize / 2);
+            ctx.fillStyle = 'yellow';
+            ctx.fill();
+        }
+
+        function update() {
+            // Calcula nova posição
+            const newX = pacman.x + pacman.dx;
+            const newY = pacman.y + pacman.dy;
+
+            // Verifica se o movimento é válido (não bate em parede)
+            if (map[newY] && map[newY][newX] === 0) {
+                pacman.x = newX;
+                pacman.y = newY;
+            }
+
+            // Limpa tela e redesenha tudo
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMap();
+            drawPacman();
+        }
+
+        function moveUp() {
+            pacman.dx = 0;
+            pacman.dy = -1;
+        }
+
+        function moveDown() {
+            pacman.dx = 0;
+            pacman.dy = 1;
+        }
+
+        function moveLeft() {
+            pacman.dx = -1;
+            pacman.dy = 0;
+        }
+
+        function moveRight() {
+            pacman.dx = 1;
+            pacman.dy = 0;
+        }
+
+        function gameLoop() {
+            update();
+            requestAnimationFrame(gameLoop);
+        }
+
+        drawMap();
+        drawPacman();
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
